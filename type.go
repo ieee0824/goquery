@@ -1,12 +1,20 @@
 package goquery
 
 import (
+	"crypto/tls"
 	"errors"
 	"io"
 	"net/http"
 	"net/url"
 
 	"golang.org/x/net/html"
+)
+
+var (
+	tr = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client = &http.Client{Transport: tr}
 )
 
 // Document represents an HTML document to be manipulated. Unlike jQuery, which
@@ -31,7 +39,7 @@ func NewDocumentFromNode(root *html.Node) *Document {
 // node, ready to be manipulated.
 func NewDocument(url string) (*Document, error) {
 	// Load the URL
-	res, e := http.Get(url)
+	res, e := client.Get(url)
 	if e != nil {
 		return nil, e
 	}
